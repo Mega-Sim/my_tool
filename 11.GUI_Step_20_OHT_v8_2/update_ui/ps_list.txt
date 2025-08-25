@@ -1,0 +1,2 @@
+semes     3830  3820  0 18:13 ?        00:00:00 sh -c ps -ef | grep 'ecmaster' > ps_list.txt
+semes     3832  3830  0 18:13 ?        00:00:00 grep ecmaster
