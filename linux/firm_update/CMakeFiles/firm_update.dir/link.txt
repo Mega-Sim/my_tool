@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror   CMakeFiles/firm_update.dir/firm_update.c.o  -o firm_update ../../../libsoem.a -lpthread -lrt 

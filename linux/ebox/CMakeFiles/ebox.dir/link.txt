@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -Werror   CMakeFiles/ebox.dir/ebox.c.o  -o ebox ../../../libsoem.a -lpthread -lrt 
