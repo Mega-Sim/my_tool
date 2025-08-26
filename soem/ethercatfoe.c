@@ -218,6 +218,9 @@ int ecx_FOEwrite(ecx_contextt *context, uint16 slave, char *filename, uint32 pas
       printf("Firmware update progress  ->  firm_update.log save... \n");
    // -------------------------
 
+   /* Reset mailbox counter to avoid stale FoE sessions between firmware files */
+   context->slavelist[slave].mbx_cnt = 0;
+
    ec_clearmbx(&MbxIn);
    /* Empty slave out mailbox if something is in. Timeout set to 0 */
    wkc = ecx_mbxreceive(context, slave, (ec_mbxbuft *)&MbxIn, 0);
