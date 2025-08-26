@@ -1033,7 +1033,7 @@ void update_uiFrame::OnButtonClick( wxCommandEvent& event )
 
         for (const auto& a : axes)
         {
-            makeCommand = makeCommand + "/f enp2s0 " + std::to_string(a.axis) + " " + a.file;
+            makeCommand = "sudo ./firm_update /f enp2s0 1 " + a.file;
 
             iRunResult = shell_0_or_1(makeCommand);
             if(iRunResult == RESULT_SUCCESS)
