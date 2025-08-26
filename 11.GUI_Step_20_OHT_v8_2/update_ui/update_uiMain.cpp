@@ -1023,6 +1023,8 @@ void update_uiFrame::OnButtonClick( wxCommandEvent& event )
     // (2) Firmware - New
     if (id == wxID_BUTTON_NEW_DRIVING)
     {
+        const std::string baseCommand = "sudo ./firm_update ";
+
         struct AxisInfo { int axis; std::string file; } axes[] = {
             {AXIS_DRIVING, FILE_LOCATION.NEW_ROM.driving},
             {AXIS_HOIST,   FILE_LOCATION.NEW_ROM.hoist},
@@ -1033,9 +1035,10 @@ void update_uiFrame::OnButtonClick( wxCommandEvent& event )
 
         for (const auto& a : axes)
         {
-            makeCommand = "sudo ./firm_update /f enp2s0 1 " + a.file;
+            std::string cmd = baseCommand + "/f enp2s0 1 " + a.file;
 
-            iRunResult = shell_0_or_1(makeCommand);
+            iRunResult = shell_0_or_1(cmd);
+          
             if(iRunResult == RESULT_SUCCESS)
             {
                 resetController(a.axis);
