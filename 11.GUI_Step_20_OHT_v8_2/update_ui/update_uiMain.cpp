@@ -1038,6 +1038,7 @@ void update_uiFrame::OnButtonClick( wxCommandEvent& event )
             std::string cmd = baseCommand + "/f enp2s0 1 " + a.file;
 
             iRunResult = shell_0_or_1(cmd);
+          
             if(iRunResult == RESULT_SUCCESS)
             {
                 resetController(a.axis);
