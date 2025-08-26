@@ -1,0 +1,31 @@
+>>>  Firmware update utility. Version : 2.0 
+Slave no check ok = 1 
+Starting firmware update example
+ec_init on enp2s0 succeeded.
+3 slaves found and configured.
+Request init state for slave 1
+Slave 1 state to INIT.
+ SM0 A:1600 L: 268 F:00010026
+ SM1 A:1400 L: 268 F:00010022
+Request BOOT state for slave 1
+Slave 1 state to BOOT.
+File read OK, 1212712 bytes.
+FoE write....Firmware update progress  ->  firm_update.log save... 
+ 
+  Log Pass(1) : 1020304 
+ 
+  Log Pass(2) : 1020304 
+#(02) begin wkc = 1 
+#(03) ecx_mbxreceive Return = 1 
+#(04) ECT_MBXT_FOE  
+#(05) ECT_FOE_ACK 
+#(30) packetnumber = 0 sendpacket = 0 
+#(32)  psize = 1212712  maxdata = 256 
+#(32) psize = 1212712  segmentdata = 256 maxdata = 256 
+#(06) wkc = 1  
+#(03) ecx_mbxreceive Return = 1 
+#(04) ECT_MBXT_FOE  
+#(12)  ECT_FOE_ERROR  
+#(14) >> EC_ERR_TYPE_FOE_ERROR  
+#(20) exit wkr = -5 
+>>>>>>>>>>  Firmware update fail... ErrCode = -5 
