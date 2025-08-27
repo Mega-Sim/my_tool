@@ -201,7 +201,7 @@ int ecx_FOEwrite(ecx_contextt *context, uint16 slave, char *filename, uint32 pas
 {
    ec_FOEt *FOEp, *aFOEp;
    int wkc;
-   int32 packetnumber, sendpacket = 0;
+   int32 packetnumber, sendpacket = 1;
    uint16 fnsize, maxdata;
    int segmentdata;
    ec_mbxbuft MbxIn, MbxOut;
@@ -216,6 +216,9 @@ int ecx_FOEwrite(ecx_contextt *context, uint16 slave, char *filename, uint32 pas
       printf("Log file open failed... \n");
    else
       printf("Firmware update progress  ->  firm_update.log save... \n");
+   printf("#(00) start sendpacket = %d\n", sendpacket);
+   if(fp)
+      fprintf(fp, "#(00) start sendpacket = %d\n", sendpacket);
    // -------------------------
 
    /* Reset mailbox counter to avoid stale FoE sessions between firmware files */
@@ -287,10 +290,10 @@ int ecx_FOEwrite(ecx_contextt *context, uint16 slave, char *filename, uint32 pas
 					      printf("#(05) ECT_FOE_ACK \n");
                      packetnumber = etohl(aFOEp->PacketNumber);
 
-		               printf("#(30) packetnumber = %d sendpacket = %d \n", packetnumber, sendpacket);
-                        fprintf(fp, "#(30) packetnumber = %d sendpacket = %d \n", packetnumber, sendpacket);
+                               printf("#(30) packetnumber = %d expected = %d \n", packetnumber, sendpacket - 1);
+                        fprintf(fp, "#(30) packetnumber = %d expected = %d \n", packetnumber, sendpacket - 1);
 
-                     if (packetnumber == sendpacket)
+                     if (packetnumber == (sendpacket - 1))
                      {
                         if (context->FOEhook)
                         {
@@ -331,21 +334,27 @@ int ecx_FOEwrite(ecx_contextt *context, uint16 slave, char *filename, uint32 pas
                            context->slavelist[slave].mbx_cnt = cnt;
                            FOEp->MbxHeader.mbxtype = ECT_MBXT_FOE + MBX_HDR_SET_CNT(cnt); /* FoE */
                            FOEp->OpCode = ECT_FOE_DATA;
-                           sendpacket++;
                            FOEp->PacketNumber = htoel(sendpacket);
+                           printf("#(33) Sending packet %d with %d bytes\n", sendpacket, segmentdata);
+                           if(fp)
+                              fprintf(fp, "#(33) Sending packet %d with %d bytes\n", sendpacket, segmentdata);
                            memcpy(&FOEp->Data[0], p, segmentdata);
                            p = (uint8 *)p + segmentdata;
                            /* send FoE data to slave */
                            wkc = ecx_mbxsend(context, slave, (ec_mbxbuft *)&MbxOut, EC_TIMEOUTTXM);
-			                  printf("#(06) wkc = %d  \n", wkc);
+                           printf("#(06) wkc = %d  \n", wkc);
+                           if(fp)
                               fprintf(fp, "#(06) wkc = %d  \n", wkc);
 
-
-                           if (wkc <= 0)
+                           if (wkc > 0)
                            {
-			                     printf("#(07) wkc <= 0  \n");
+                              sendpacket++;
+                           }
+                           else
+                           {
+                              printf("#(07) wkc <= 0  \n");
+                              if(fp)
                                  fprintf(fp, "#(07) wkc <= 0  \n");
-
                               worktodo = FALSE;
                            }
                         }
@@ -353,8 +362,8 @@ int ecx_FOEwrite(ecx_contextt *context, uint16 slave, char *filename, uint32 pas
                      else
                      {
                         /* FoE error */
-			               printf("#(08) packetnumber <> sendpacket... EC_ERR_TYPE_FOE_PACKETNUMBER!!  \n");
-                           fprintf(fp, "#(08) packetnumber <> sendpacket... EC_ERR_TYPE_FOE_PACKETNUMBER!!  \n");
+                                       printf("#(08) packetnumber (%d) <> expected (%d)... EC_ERR_TYPE_FOE_PACKETNUMBER!!  \n", packetnumber, sendpacket - 1);
+                           fprintf(fp, "#(08) packetnumber (%d) <> expected (%d)... EC_ERR_TYPE_FOE_PACKETNUMBER!!  \n", packetnumber, sendpacket - 1);
                         wkc = -EC_ERR_TYPE_FOE_PACKETNUMBER;
                      }
                      break;
@@ -368,7 +377,7 @@ int ecx_FOEwrite(ecx_contextt *context, uint16 slave, char *filename, uint32 pas
                      /* otherwise ignore */
                      if (sendpacket)
                      {
-						      printf("#(10) sendpacket = %d \n", sendpacket);
+                                                      printf("#(10) resend packet %d \n", sendpacket - 1);
                         if (!psize)
                         {
 							      printf("#(11) psize = %d \n", psize);
